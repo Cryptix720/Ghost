@@ -10,13 +10,19 @@
  * - expose base classes & registry to the rest of Ghost
  */
 
+// Route Service settings are stored in content/settings/routes.yaml
+module.exports.settings = require('./settings');
+
 // This is the main router, that gets extended & mounted /site
 module.exports.siteRouter = require('./site-router');
 
 // We expose this via the App Proxy, so that Apps can register routes
 module.exports.appRouter = require('./app-router');
 
+module.exports.channelsRouter = require('./channels-router');
+
 // Classes for other parts of Ghost to extend
 module.exports.ParentRouter = require('./ParentRouter');
 
+// Registry is where the live list of routes lives
 module.exports.registry = require('./registry');

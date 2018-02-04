@@ -19,12 +19,21 @@ function loadConfig() {
     return channelConfig;
 }
 
-module.exports.list = function list() {
-    debug('Load channels start');
-    _.each(loadConfig(), function (channelConfig, channelName) {
-        channels.push(new Channel(channelName, channelConfig));
-    });
+module.exports = {
+    list() {
+        debug('Load channels start');
+        _.each(loadConfig(), function (channelConfig, channelName) {
+            channels.push(new Channel(channelName, channelConfig));
+        });
 
-    debug('Load channels end');
-    return channels;
+        debug('Load channels end');
+        return channels;
+    },
+    find(channelName) {
+        var config = loadConfig();
+        console.log('CHANNEL CONFIG', config);
+        if (_.has(config, channelName)) {
+            return new Channel(channelName, config[channelName]);
+        }
+    }
 };
