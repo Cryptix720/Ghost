@@ -53,6 +53,7 @@ Session.vim
 /content/images/**/*
 /content/adapters/storage/**/*
 /content/adapters/scheduling/**/*
+/content/settings/**/*
 !/content/themes/casper/**
 !/README.md
 
