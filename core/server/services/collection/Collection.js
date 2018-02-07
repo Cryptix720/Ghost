@@ -5,8 +5,9 @@ const settingsCache = require('../settings/cache');
 _.templateSettings.interpolate = /{([\s\S]+?)}/g;
 
 class Collection {
-    constructor(options) {
-        this.baseRoute = options.baseRoute;
+    constructor(key, options) {
+        // TODO don't assume key is a route
+        this.baseRoute = key;
         // TODO: use this to generate post routes!
         this.entryRoute = Collection.resolve(options.route);
         this.template = options.template;

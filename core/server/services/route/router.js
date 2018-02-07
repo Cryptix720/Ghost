@@ -10,9 +10,8 @@ module.exports = function router() {
 
     // TODO: do something with routes!
 
-    _.each(routeSettings.collections, (value, key) => {
-        value.baseRoute = key;
-        const collection = new collectionService.Collection(value);
+    _.each(routeSettings.collections, (options, key) => {
+        const collection = new collectionService.Collection(key, options);
         dynamicRouter.mountRouter(collection.baseRoute, channelService.router(collection.channel()));
     });
 
