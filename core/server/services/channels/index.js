@@ -9,10 +9,7 @@
  * Everything else exposed via the Channel object
  */
 
-// Exports the top-level router
-//module.exports = require('./parent-router');
-
 // Exports the list of channels
-module.exports = require('./loader');
 module.exports.router = require('./router');
+module.exports.Channel = require('./Channel');
 

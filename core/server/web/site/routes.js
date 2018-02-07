@@ -30,18 +30,22 @@ module.exports = function siteRoutes() {
     // Channels - register sub-router
     // The purpose of having a parentRouter for channels, is so that we can load channels from wherever we want:
     // config, settings, apps, etc, and that it will be possible for the router to be reloaded.
-    //siteRouter.mountRouter(channelsService.router());
-    siteRouter.mountRouter(routeService.channelsRouter());
+    // siteRouter.mountRouter(channelsService.router());
+    // siteRouter.mountRouter(routeService.channelsRouter());
+
+    siteRouter.mountRouter(routeService.dynamicRouter());
 
     // Apps - register sub-router
     // The purpose of having a parentRouter for apps, is that Apps can register a route whenever they want.
     // Apps cannot yet deregister, it's complex to implement and I don't yet have a clear use-case for this.
     siteRouter.mountRouter(appRouter.router());
 
+    // @TODO rewrite entry route handling
     // Default - register entry controller as route
     siteRouter.mountRoute('*', controllers.entry);
 
     debug('Routes:', routeService.registry.getAll());
+    console.log('Routes:', routeService.registry.getAll());
 
     return siteRouter.router();
 };

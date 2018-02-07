@@ -19,7 +19,7 @@ module.exports.siteRouter = require('./site-router');
 // We expose this via the App Proxy, so that Apps can register routes
 module.exports.appRouter = require('./app-router');
 
-module.exports.channelsRouter = require('./channels-router');
+module.exports.dynamicRouter = require('./router');
 
 // Classes for other parts of Ghost to extend
 module.exports.ParentRouter = require('./ParentRouter');
