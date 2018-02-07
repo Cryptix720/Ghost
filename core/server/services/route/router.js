@@ -3,44 +3,9 @@ var _ = require('lodash'),
     ParentRouter = require('./ParentRouter'),
     settingsCache = require('../settings/cache'),
     channelsService = require('../channels'),
+    resourceService = require('../resource'),
     routes = [],
-    collections = [],
-    resourceConfig = {
-        "tag": {
-            "postOptions": {
-                "filter": "tags:'%s'+tags.visibility:public"
-            },
-            "data": {
-                "tag": {
-                    "type": "read",
-                    "resource": "tags",
-                    "options": {
-                        "slug": "%s",
-                        "visibility": "public"
-                    }
-                }
-            },
-            "slugTemplate": true,
-            "editRedirect": "#/settings/tags/:slug/"
-        },
-        "author": {
-            "postOptions": {
-                "filter": "author:'%s'"
-            },
-            "data": {
-                "author": {
-                    "type": "read",
-                    "resource": "users",
-                    "options": {
-                        "slug": "%s"
-                    }
-                }
-            },
-            "slugTemplate": true,
-            "editRedirect": "#/team/:slug/"
-        }
-    },
-    resources = [];
+    collections = [];
 
 _.templateSettings.interpolate = /{([\s\S]+?)}/g;
 
@@ -55,12 +20,12 @@ class Collection {
     }
 
     channel() {
+        const name = Collection.routeToName(this.baseRoute);
         const options = {
-            name: Collection.routeToName(this.baseRoute),
             postOptions: this.query
         };
 
-        return new channelsService.Channel(options);
+        return new channelsService.Channel(name, options);
     }
 
     static routeToName(route) {
@@ -105,14 +70,15 @@ module.exports = function router() {
     resolveCollections(routeSettings.collections);
     resolveResources(routeSettings.resources);
 
-    console.log('Collections', collections);
-
     _.each(collections, (collection) => {
         dynamicRouter.mountRouter(collection.baseRoute, channelsService.router(collection.channel()));
     });
 
     _.each(routeSettings.resources, (route, name) => {
-        dynamicRouter.mountRouter(route.replace('{slug}', ':slug'), channelsService.router(new channelsService.Channel(name, resourceConfig[name])));
+        const resource = resourceService.registry[name];
+        // Set a route on the resource, informs Ghost where to render this resource
+        resource.setRoute(route.replace('{slug}', ':slug'));
+        dynamicRouter.mountRouter(resource.route, channelsService.router(resource.channel()));
     });
 
     return dynamicRouter.router();

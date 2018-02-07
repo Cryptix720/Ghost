@@ -1,0 +1,59 @@
+{
+    "tag": {
+        "name": "tag",
+        "api": "tags",
+        "prefetchOptions": {
+            "filter": "visibility:public"
+        },
+        "events": {
+            "tag.added": "add",
+            "tag.edited": "update",
+            "tag.deleted": "remove"
+        },
+        "channelConfig": {
+            "postOptions": {
+                "filter": "tags:'%s'+tags.visibility:public"
+            },
+            "data": {
+                "tag": {
+                    "type": "read",
+                    "resource": "tags",
+                    "options": {
+                        "slug": "%s",
+                        "visibility": "public"
+                    }
+                }
+            },
+            "slugTemplate": true,
+            "editRedirect": "#/settings/tags/:slug/"
+        }
+    },
+    "author": {
+        "name": "author",
+        "api": "users",
+        "prefetchOptions": {
+            "filter": "visibility:public"
+        },
+        "events": {
+            "user.activated": "add",
+            "user.activated.edited": "update",
+            "user.deactivated": "remove"
+        },
+        "channelConfig": {
+            "postOptions": {
+                "filter": "author:'%s'"
+            },
+            "data": {
+                "author": {
+                    "type": "read",
+                    "resource": "users",
+                    "options": {
+                        "slug": "%s"
+                    }
+                }
+            },
+            "slugTemplate": true,
+            "editRedirect": "#/team/:slug/"
+        }
+    }
+}
