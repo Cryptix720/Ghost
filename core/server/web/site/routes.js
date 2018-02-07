@@ -5,7 +5,6 @@ var debug = require('ghost-ignition').debug('site:routes'),
 
     // Sub Routers
     appRouter = routeService.appRouter,
-    // channelsService = require('../../services/channels'),
 
     // Controllers
     controllers = require('../../controllers'),
@@ -27,12 +26,8 @@ module.exports = function siteRoutes() {
     // Orrrrr maybe preview should be an internal App??!
     siteRouter.mountRoute(previewRoute, controllers.preview);
 
-    // Channels - register sub-router
-    // The purpose of having a parentRouter for channels, is so that we can load channels from wherever we want:
-    // config, settings, apps, etc, and that it will be possible for the router to be reloaded.
-    // siteRouter.mountRouter(channelsService.router());
-    // siteRouter.mountRouter(routeService.channelsRouter());
-
+    // Dynamic Route Service Router
+    // Based on routes.yaml
     siteRouter.mountRouter(routeService.dynamicRouter());
 
     // Apps - register sub-router

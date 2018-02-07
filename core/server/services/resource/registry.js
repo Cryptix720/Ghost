@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const channelsService = require('../channels');
+const channelsService = require('../channel');
 const resourceDefaults = require('./default-config');
 
 class Resource {
