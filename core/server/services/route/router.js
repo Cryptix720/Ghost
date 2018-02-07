@@ -5,6 +5,41 @@ var _ = require('lodash'),
     channelsService = require('../channels'),
     routes = [],
     collections = [],
+    resourceConfig = {
+        "tag": {
+            "postOptions": {
+                "filter": "tags:'%s'+tags.visibility:public"
+            },
+            "data": {
+                "tag": {
+                    "type": "read",
+                    "resource": "tags",
+                    "options": {
+                        "slug": "%s",
+                        "visibility": "public"
+                    }
+                }
+            },
+            "slugTemplate": true,
+            "editRedirect": "#/settings/tags/:slug/"
+        },
+        "author": {
+            "postOptions": {
+                "filter": "author:'%s'"
+            },
+            "data": {
+                "author": {
+                    "type": "read",
+                    "resource": "users",
+                    "options": {
+                        "slug": "%s"
+                    }
+                }
+            },
+            "slugTemplate": true,
+            "editRedirect": "#/team/:slug/"
+        }
+    },
     resources = [];
 
 _.templateSettings.interpolate = /{([\s\S]+?)}/g;
@@ -74,6 +109,10 @@ module.exports = function router() {
 
     _.each(collections, (collection) => {
         dynamicRouter.mountRouter(collection.baseRoute, channelsService.router(collection.channel()));
+    });
+
+    _.each(routeSettings.resources, (route, name) => {
+        dynamicRouter.mountRouter(route.replace('{slug}', ':slug'), channelsService.router(new channelsService.Channel(name, resourceConfig[name])));
     });
 
     return dynamicRouter.router();
