@@ -3,64 +3,16 @@ const routeSettings = require('./settings');
 const ParentRouter = require('./ParentRouter');
 const channelService = require('../channel');
 const resourceService = require('../resource');
-const settingsCache = require('../settings/cache');
-const collections = [];
-
-_.templateSettings.interpolate = /{([\s\S]+?)}/g;
-
-class Collection {
-    constructor(options) {
-        this.baseRoute = options.baseRoute;
-        // TODO: use this to generate post routes!
-        this.entryRoute = Collection.resolve(options.route);
-        this.template = options.template;
-
-        this.query = _.pick(options, 'fields', 'filter', 'order_by', 'limit');
-    }
-
-    channel() {
-        const name = Collection.routeToName(this.baseRoute);
-        const options = {
-            postOptions: this.query
-        };
-
-        return new channelService.Channel(name, options);
-    }
-
-    static routeToName(route) {
-        if (route === '/') {
-            return 'index';
-        }
-
-        return route.replace(/\//g, '');
-    }
-
-    static resolve(value) {
-        // @TODO figure out how to do this properly
-        const settings = {
-            globals: {
-                permalinks: settingsCache.get('permalinks')
-            }
-        };
-
-        return _.template(value)(settings);
-    }
-}
-
-function resolveCollections(settings) {
-    _.each(settings, (value, key) => {
-        value.baseRoute = key;
-        collections.push(new Collection(value));
-    });
-}
+const collectionService = require('../collection');
 
 module.exports = function router() {
     const dynamicRouter = new ParentRouter('routeService');
 
-    // TODO: do something with routes
-    resolveCollections(routeSettings.collections);
+    // TODO: do something with routes!
 
-    _.each(collections, (collection) => {
+    _.each(routeSettings.collections, (value, key) => {
+        value.baseRoute = key;
+        const collection = new collectionService.Collection(value);
         dynamicRouter.mountRouter(collection.baseRoute, channelService.router(collection.channel()));
     });
 
