@@ -1,11 +1,10 @@
-var _ = require('lodash'),
-    routeSettings = require('./settings'),
-    ParentRouter = require('./ParentRouter'),
-    settingsCache = require('../settings/cache'),
-    channelsService = require('../channel'),
-    resourceService = require('../resource'),
-    routes = [],
-    collections = [];
+const _ = require('lodash');
+const routeSettings = require('./settings');
+const ParentRouter = require('./ParentRouter');
+const channelService = require('../channel');
+const resourceService = require('../resource');
+const settingsCache = require('../settings/cache');
+const collections = [];
 
 _.templateSettings.interpolate = /{([\s\S]+?)}/g;
 
@@ -25,7 +24,7 @@ class Collection {
             postOptions: this.query
         };
 
-        return new channelsService.Channel(name, options);
+        return new channelService.Channel(name, options);
     }
 
     static routeToName(route) {
@@ -48,10 +47,6 @@ class Collection {
     }
 }
 
-function resolveRoutes(settings) {
-    // console.log('Got Routes:', settings);
-}
-
 function resolveCollections(settings) {
     _.each(settings, (value, key) => {
         value.baseRoute = key;
@@ -59,26 +54,21 @@ function resolveCollections(settings) {
     });
 }
 
-function resolveResources(settings) {
-    // console.log('Got Resources:', settings);
-}
-
 module.exports = function router() {
-    var dynamicRouter = new ParentRouter('routeService');
+    const dynamicRouter = new ParentRouter('routeService');
 
-    resolveRoutes(routeSettings.routes);
+    // TODO: do something with routes
     resolveCollections(routeSettings.collections);
-    resolveResources(routeSettings.resources);
 
     _.each(collections, (collection) => {
-        dynamicRouter.mountRouter(collection.baseRoute, channelsService.router(collection.channel()));
+        dynamicRouter.mountRouter(collection.baseRoute, channelService.router(collection.channel()));
     });
 
     _.each(routeSettings.resources, (route, name) => {
         const resource = resourceService.registry[name];
         // Set a route on the resource, informs Ghost where to render this resource
-        resource.setRoute(route.replace('{slug}', ':slug'));
-        dynamicRouter.mountRouter(resource.route, channelsService.router(resource.channel()));
+        resource.setRoute(route);
+        dynamicRouter.mountRouter(resource.route, channelService.router(resource.channel()));
     });
 
     return dynamicRouter.router();
