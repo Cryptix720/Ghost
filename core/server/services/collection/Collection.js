@@ -6,8 +6,8 @@ _.templateSettings.interpolate = /{([\s\S]+?)}/g;
 
 class Collection {
     constructor(key, options) {
-        // TODO don't assume key is a route
-        this.baseRoute = key;
+        // Set this.baseRoute & this.name
+        this.handleRouteKey(key);
         // TODO: use this to generate post routes!
         this.entryRoute = Collection.resolve(options.route);
         this.template = options.template;
@@ -16,12 +16,23 @@ class Collection {
     }
 
     channel() {
-        const name = Collection.routeToName(this.baseRoute);
+        // @TODO custom template & context support
+        // @TODO Pagination & RSS support
         const options = {
             postOptions: this.query
         };
 
-        return new channelService.Channel(name, options);
+        return new channelService.Channel(this.name, options);
+    }
+
+    handleRouteKey(key) {
+        if (key === '/') {
+            this.name = 'index';
+            this.baseRoute = '/';
+        } else {
+            this.name = key.replace(/^\/|\/$/g, '');
+            this.baseRoute = `/${this.name}/`;
+        }
     }
 
     static routeToName(route) {
@@ -35,6 +46,7 @@ class Collection {
     static resolve(value) {
         // @TODO figure out how to do this properly
         const settings = {
+            slug: ':slug',
             globals: {
                 permalinks: settingsCache.get('permalinks')
             }
